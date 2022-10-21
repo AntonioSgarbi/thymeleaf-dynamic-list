@@ -9,11 +9,9 @@ import tech.antoniosgarbi.desafioopcional.repository.WordRepository;
 @Service
 public class WordService {
     private final WordRepository wordRepository;
-    private final TagService tagService;
 
-    public WordService(WordRepository wordRepository, TagService tagService) {
+    public WordService(WordRepository wordRepository) {
         this.wordRepository = wordRepository;
-        this.tagService = tagService;
     }
 
     public Page<Word> findAll(Pageable pageable) {
@@ -25,24 +23,14 @@ public class WordService {
         return word;
     }
 
-    public Word findById(Long id) {
-        return this.findModel(id);
+    public Word update(Word word) {
+        this.findModel(word.getId());
+        this.insert(word);
+        return word;
     }
 
-    public Page<Word> findByName(String name, Pageable pageable) {
-        return this.wordRepository.findAllByValueContaining(name, pageable);
-    }
-
-    public Word update(Word dto) {
-        this.findModel(dto.getId());
-        this.insert(dto);
-        return dto;
-    }
-
-    private Word findModel(Long id) {
-        return this.wordRepository
-                .findById(id)
-                .orElseThrow(() -> new RuntimeException("not found"));
+    public Word findModel(Long id) {
+        return this.wordRepository.findById(id).orElseThrow(() -> new RuntimeException("not found"));
     }
 
     public void delete(Long id) {

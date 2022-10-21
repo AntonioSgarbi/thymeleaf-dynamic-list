@@ -34,10 +34,10 @@ public class TagService {
         return model;
     }
 
-    public Tag update(Tag dto) {
-        this.findModel(dto.getId());
-        this.insert(dto);
-        return dto;
+    public Tag update(Tag tag) {
+        this.findModel(tag.getId());
+        this.insert(tag);
+        return tag;
     }
 
     public Tag findById(Long id) {
@@ -47,8 +47,6 @@ public class TagService {
     public void delete(Long id) {
         this.tagRepository.deleteById(id);
     }
-
-
 
     private Tag findModel(Long id) {
         return this.tagRepository

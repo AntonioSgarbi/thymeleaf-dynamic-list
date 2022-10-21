@@ -4,12 +4,10 @@
       layout:decorate="~{layout.html}">
 <meta charset="UTF-8">
 <head>
-    <title>Title</title>
+    <title>Lista de Etiquetas</title>
 </head>
 
-<body>
 <div layout:fragment="content">
-
     <div>
         <table class="table table-striped">
             <thead>
@@ -29,7 +27,7 @@
                 <td th:text="${tag.id}"></td>
                 <td th:text="${tag.value}" width="70%"></td>
                 <td><a class="btn btn-primary btn-sm" th:href="@{/tag/new/} + ${tag.id}">Editar</a>
-                    <a class="btn btn-primary btn-sm" th:href="@{/tag/excluir} + ${tag.id}"
+                    <a class="btn btn-primary btn-sm" th:href="@{/tag/excluir/} + ${tag.id}"
                        onclick="return confirm('Você realmente deseja excluir essa linguagem?')">Excluir</a>
                 </td>
             </tr>
@@ -37,6 +35,4 @@
         </table>
     </div>
 </div>
-
-</body>
 </html>

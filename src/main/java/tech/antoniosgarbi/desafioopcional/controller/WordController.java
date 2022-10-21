@@ -1,13 +1,10 @@
 package tech.antoniosgarbi.desafioopcional.controller;
 
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
-import tech.antoniosgarbi.desafioopcional.model.Tag;
 import tech.antoniosgarbi.desafioopcional.model.Word;
 import tech.antoniosgarbi.desafioopcional.service.TagService;
 import tech.antoniosgarbi.desafioopcional.service.WordService;
@@ -32,9 +29,13 @@ public class WordController {
     }
 
     @GetMapping("/new")
-    public ModelAndView createForm() {
+    public ModelAndView createForm(@RequestParam(required = false) Long id) {
         ModelAndView mv = new ModelAndView("word/form.html");
-        mv.addObject("model", new Word());
+        if(id != null)
+            mv.addObject("model", this.wordService.findModel(id));
+        else
+            mv.addObject("model", new Word());
+
         mv.addObject("tagList", this.tagService.findAllList());
 
         return mv;
@@ -47,7 +48,6 @@ public class WordController {
         ModelAndView mv = new ModelAndView("word/form.html");
 
         if(bindingResult.hasErrors()) {
-            System.out.println(bindingResult);
             mv.addObject("model", word);
             return mv;
         }
@@ -65,19 +65,6 @@ public class WordController {
         return mv;
     }
 
-    @GetMapping("/new/{id}")
-    public ModelAndView update(Tag tag, BindingResult bindingResult, @PathVariable Long id) {
-        ModelAndView mv = new ModelAndView("word/form.html");
-        mv.addObject("model", this.wordService.findById(id));
-        mv.addObject("tagList", this.tagService.findAllList());
-
-        return mv;
-    }
-
-    @GetMapping("/name/{name}")
-    public ResponseEntity<Page<Word>> findByname(@PathVariable String name, Pageable pageable) {
-        return ResponseEntity.ok(wordService.findByName(name, pageable));
-    }
 
     @GetMapping("/excluir/{id}")
     public ModelAndView delete(@PathVariable Long id) {

@@ -4,7 +4,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.ModelAndView;
 import tech.antoniosgarbi.desafioopcional.model.Tag;
@@ -37,39 +36,41 @@ public class TagController {
     }
 
     @PostMapping("/new")
-    public ModelAndView insert(Tag dto) {
-        ModelAndView mv = new ModelAndView("word/form.html");
+    public ModelAndView insert(Tag tag) {
+        ModelAndView mv = new ModelAndView("tag/form.html");
 
-        if(dto.getId() != null) {
-            dto = this.tagService.update(dto);
+        if(tag.getId() != null) {
+            tag = this.tagService.update(tag);
         } else {
-            dto = this.tagService.insert(dto);
+            tag = this.tagService.insert(tag);
         }
-        mv.addObject("model", dto);
+        mv.addObject("model", tag);
 
         return mv;
     }
 
     @GetMapping("/new/{id}")
-    public ModelAndView loadToUpdate(BindingResult bindingResult, @PathVariable Long id) {
+    public ModelAndView loadToUpdate(@PathVariable Long id) {
         ModelAndView mv = new ModelAndView("tag/form.html");
         mv.addObject("model", this.tagService.findById(id));
 
         return mv;
     }
 
-    @PutMapping("/new/{id}")
-    public ModelAndView update(Tag tag, BindingResult bindingResult, @PathVariable Long id) {
-        this.tagService.insert(tag);
+    @GetMapping("/delete/{id}")
+    public ModelAndView delete(@PathVariable Long id) {
+        ModelAndView mv = new ModelAndView("tag/list.html");
 
-        ModelAndView mv = new ModelAndView("tag/form.html");
-        mv.addObject("model", this.tagService.findById(id));
+        this.tagService.delete(id);
+
+        mv.addObject("list", this.tagService.findAll(Pageable.unpaged()));
+        mv.addObject("message", "registro excluído");
 
         return mv;
     }
 
     @GetMapping("/name/{name}")
-    public ResponseEntity<Page<Tag>> findByname(@PathVariable String name, Pageable pageable) {
+    public ResponseEntity<Page<Tag>> findByName(@PathVariable String name, Pageable pageable) {
         return ResponseEntity.ok(tagService.findByName(name, pageable));
     }
 }

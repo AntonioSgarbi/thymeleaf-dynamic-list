@@ -158,7 +158,6 @@
     </script>
 </head>
 
-<body>
 <div layout:fragment="content">
     <div>
         <h1>Cadastrar Palavra</h1>
@@ -175,7 +174,7 @@
                     <div class="text-danger" th:if="${#fields.hasErrors('value')}" th:errors="${value}"></div>
                 </div>
 
-                <div class="search-wrapper" style="display:none" >
+                <div class="search-wrapper">
                     <label for="search">Buscar Etiquetas para adicionar:</label>
                     <input type="search" id="search" data-search>
                 </div>
@@ -188,35 +187,35 @@
                     </div>
                 </template>
 
-                <div th:each="tag : ${tagList}">
-                    <input type="checkbox" th:value="${tag.id}" th:field="*{tags}"/>
-                    <label th:text="${tag.value}"></label>
-                </div>
+<!--                <div th:each="tag : ${tagList}">-->
+<!--                    <input type="checkbox" th:value="${tag.id}" th:field="*{tags}"/>-->
+<!--                    <label th:text="${tag.value}"></label>-->
+<!--                </div>-->
 
-<!--                <template data-row-template>-->
-<!--                    <tr class="table-row" data-row onclick="removeItem(this)">-->
-<!--                        <td data-row-id></td>-->
-<!--                        <td data-row-value></td>-->
-<!--                        <td data-row-input style="display:none">-->
-<!--                            <input input-row />-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                </template>-->
+                <template data-row-template>
+                    <tr class="table-row" data-row onclick="removeItem(this)">
+                        <td data-row-id></td>
+                        <td data-row-value></td>
+                        <td data-row-input style="display:none">
+                            <input input-row />
+                        </td>
+                    </tr>
+                </template>
 
-<!--                <table class="table table-striped">-->
-<!--                    <thead><tr><th>Id</th><th>Nome</th></tr></thead>-->
-<!--                    <tbody table-body-container>-->
+                <table class="table table-striped">
+                    <thead><tr><th>Id</th><th>Nome</th></tr></thead>
+                    <tbody table-body-container>
 
 
-<!--                    <tr th:each="tag, iter : *{tags}" onclick="removeItem(this)">-->
-<!--                        <td data-row-id th:text="${tag.id}"></td>-->
-<!--                        <td data-row-value th:text="${tag.value}"></td>-->
-<!--                        <td style="display:none">-->
-<!--                            <input th:field="*{tags[__${iter.index}__]}"/>-->
-<!--                        </td>-->
-<!--                    </tr>-->
-<!--                    </tbody>-->
-<!--                </table>-->
+                    <tr th:each="tag, iter : *{tags}" onclick="removeItem(this)">
+                        <td data-row-id th:text="${tag.id}"></td>
+                        <td data-row-value th:text="${tag.value}"></td>
+                        <td style="display:none">
+                            <input th:field="*{tags[__${iter.index}__]}"/>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
 
                 <button type="submit" class="btn btn-primary">Salvar Palavra</button>
             </fieldset>
@@ -224,7 +223,4 @@
     </div>
 
 </div>
-
-</body>
-
 </html>
