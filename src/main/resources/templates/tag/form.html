@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Etiqueta</title>
+
+    <style>
+        .search-wrapper {
+          display: flex;
+          flex-direction: column;
+          gap: .25rem;
+        }
+
+        input {
+          font-size: 1rem;
+        }
+
+        .cards {
+          display: grid;
+          grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+          gap: .25rem;
+          margin-top: 1rem;
+        }
+
+        .card {
+          border: 1px solid black;
+          background-color: white;
+          padding: .5rem;
+          display: flex;
+          flex-direction: row;
+        }
+        .card:hover {
+          background-color: rgb(94, 226, 133);
+        }
+
+        .hide {
+          display: none;
+        }
+
+        .table-row:hover {
+            background-color: rgb(240, 80, 80);
+        }
+
+    </style>
+
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var model = /*[[${model}]]*/ 'default';
+        console.log(model);
+        /*]]>*/
+
+        const baseUrl = window.location.origin;
+        var tableContainer;
+        var tableTemplate;
+
+        function removeItem(element) {
+            element.parentNode.removeChild(element)
+        }
+
+        function cardClicked(element) {
+            let header = element.querySelector("[data-header]")
+            let body = element.querySelector("[data-body]")
+
+            let id = header.textContent
+            let value = body.textContent
+
+            const item = tableTemplate.content.cloneNode(true).children[0]
+            const columnId = item.querySelector("[data-row-id]")
+            const columnName = item.querySelector("[data-row-value]")
+
+            columnId.textContent = value
+            columnName.textContent = id
+            item.id = element.id
+
+            tableContainer.append(item)
+        }
+
+        window.onload = function () {
+            const cardTemplate = document.querySelector("[data-cards-template]")
+            const cardContainer = document.querySelector("[data-cards-container]")
+            const searchInput = document.querySelector("[data-search]")
+
+            tableTemplate = document.querySelector("[data-row-template]")
+            tableContainer = document.querySelector("[table-body-container]")
+
+            let objects = []
+
+            function clearCardContainer() {
+                while(cardContainer.firstChild) {
+                    cardContainer.removeChild(cardContainer.firstChild)
+                }
+            }
+
+            function loadTable() {
+                this.model.words.forEach(element => {
+                    const item = tableTemplate.content.cloneNode(true).children[0]
+                    const columnId = item.querySelector("[data-row-id]")
+                    const columnName = item.querySelector("[data-row-value]")
+                    
+                    columnId.textContent = element.id
+                    columnName.textContent = element.value
+                    item.id = element.id
+
+                    tableContainer.append(item)
+                });
+            }
+
+            function searchByName(name) {
+                if(name) {
+                    fetch(`${baseUrl}/word/name/${name}`)
+                        .then(res => res.json())
+                        .then(json => {
+                            console.info(json);
+                            clearCardContainer();
+                            objects = json.content.map(obj => {
+                                const card = cardTemplate.content.cloneNode(true).children[0]
+                                const header = card.querySelector("[data-header]")
+                                const body = card.querySelector("[data-body]")
+
+                                header.textContent = obj.value
+                                body.textContent = obj.id
+
+                                cardContainer.append(card)
+
+                                return { id: obj.id, value: obj.value, element: card }
+                        })
+                   })
+                } else {
+                    clearCardContainer();
+                }
+            }
+
+
+            searchInput.addEventListener("input", e => {
+                const value = e.target.value.toLowerCase()
+                searchByName(value);
+            });
+
+            cardContainer.addEventListener("click", e => {
+                console.log(e.target)
+                console.log(e)
+            });
+
+        }
+    </script>
+</head>
+<body>
+<div layout:fragment="content">
+    <div>
+        <h1>Cadastrar Etiqueta</h1>
+        <form method="POST" th:object="${model}" th:action="@{/tag/new}">
+            <input id="name" type="hidden" th:field="*{id}">
+            <div class="form-group mb-3">
+                <label for="name">Nome da etiqueta:</label>
+                <input class="form-control" type="text" th:field="*{value}" required></input>
+                <div class="text-danger" th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></div>
+            </div>
+            
+<!--            <div class="search-wrapper">-->
+<!--                <label for="search">Buscar Palavras para adicionar: </label>-->
+<!--                <input type="search" id="search" data-search>-->
+<!--            </div>-->
+<!--            <div class="cards" data-cards-container></div>-->
+<!--            <template data-cards-template>-->
+<!--                <div class="card" onclick="cardClicked(this)">-->
+<!--                    <p data-body style="width: 40%; margin-left:2%;"></p>-->
+<!--                    <p data-header style="width: 40%"></p>-->
+<!--                </div>-->
+<!--            </template>-->
+            <button type="submit" class="btn btn-primary">Salvar Etiqueta</button>
+        </form>
+    </div>
+
+</div>
+
+</body>
+</html>

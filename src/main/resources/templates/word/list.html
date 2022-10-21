@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<meta charset="UTF-8">
+<head>
+    <title>Palavras</title>
+    <script> </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Opções</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(page.content)}">
+                <td colspan="3">Sem conteúdo</td>
+            </tr>
+            </tbody>
+            <tbody th:unless="${#lists.isEmpty(page.content)}">
+            <tr th:each="word : ${page.content}">
+                <td th:text="${word.id}"></td>
+                <td th:text="${word.value}" width="70%"></td>
+                <td><a class="btn btn-primary btn-sm" th:href="@{/word/new/} + ${word.id}">Editar</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{/word/excluir/} + ${word.id}"
+                       onclick="return confirm('Você realmente deseja excluir essa linguagem?')">Excluir</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+        <form name="myform" action="handle-data.php" method="post">
+            <label for="query">Search:</label>
+            <input type="text" name="query" id="query"/>
+            <button>Search</button>
+        </form>
+    </div>
+</div>
+
+</body>
+</html>

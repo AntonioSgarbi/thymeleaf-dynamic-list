@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html lang="pt-BR"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<head>
+    <meta charset="utf-8">
+    <title>Desafio básico</title>
+    <base href="/">
+    <meta content="width=device-width, initial-scale=1" name="viewport">
+    <link href="https://fonts.gstatic.com" rel="preconnect">
+</head>
+<div id="conteudo" class="container" layout:fragment="content">
+    <div class="btn-group">
+        <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Palavra
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Listar</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Cadastrar</a></li>
+        </ul>
+    </div>
+    <div class="btn-group">
+        <button type="button" class="btn btn-danger dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+            Etiqueta
+        </button>
+        <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="#">Listar</a></li>
+            <li>
+                <hr class="dropdown-divider">
+            </li>
+            <li><a class="dropdown-item" href="#">Cadastrar</a></li>
+        </ul>
+    </div>
+
+</div>
+<style>
+
+</style>
+</html>

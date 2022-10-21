@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+<meta charset="UTF-8">
+<head>
+    <title>Title</title>
+</head>
+
+<body>
+<div layout:fragment="content">
+
+    <div>
+        <table class="table table-striped">
+            <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nome</th>
+                <th>Opções</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:if="${#lists.isEmpty(page.content)}">
+                <td colspan="3">Sem conteúdo</td>
+            </tr>
+            </tbody>
+            <tbody th:unless="${#lists.isEmpty(page.content)}">
+            <tr th:each="tag : ${page.content}">
+                <td th:text="${tag.id}"></td>
+                <td th:text="${tag.value}" width="70%"></td>
+                <td><a class="btn btn-primary btn-sm" th:href="@{/tag/new/} + ${tag.id}">Editar</a>
+                    <a class="btn btn-primary btn-sm" th:href="@{/tag/excluir} + ${tag.id}"
+                       onclick="return confirm('Você realmente deseja excluir essa linguagem?')">Excluir</a>
+                </td>
+            </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+</body>
+</html>

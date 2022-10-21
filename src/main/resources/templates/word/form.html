@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout.html}">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Cadastro de Palavra</title>
+    <style>
+        .search-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: .25rem;
+        }
+
+        input {
+            font-size: 1rem;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: .25rem;
+            margin-top: 1rem;
+        }
+        tr:hover {
+            background-color: red;
+        }
+
+        .card {
+            border: 1px solid black;
+            background-color: white;
+            padding: .5rem;
+            display: flex;
+            flex-direction: row;
+        }
+
+        .card:hover {
+            background-color: rgb(94, 226, 133);
+        }
+
+        .hide {
+            display: none;
+        }
+
+        .table-row:hover {
+            background-color: rgb(240, 80, 80);
+        }
+
+    </style>
+    <script th:inline="javascript">
+        /*<![CDATA[*/
+        var model = /*[[${model}]]*/ 'default';
+        console.log(model);
+        /*]]>*/
+
+        const baseUrl = window.location.origin;
+        var tableContainer;
+        var tableTemplate;
+
+        var listContainer;
+        var listTemplate;
+
+        function removeItem(element) {
+            console.log(element)
+            element.parentNode.removeChild(element)
+        }
+
+        function cardClicked(element) {
+            console.log(element)
+
+            let header = element.querySelector("[data-header]")
+            let body = element.querySelector("[data-body]")
+
+            let id = body.textContent
+            let value = header.textContent
+
+            const tr = tableTemplate.content.cloneNode(true).children[0]
+
+            const tdId = tr.querySelector("[data-row-id]")
+            const tdValue = tr.querySelector("[data-row-value]")
+            const tdInput = tr.querySelector("[data-row-input]")
+
+            const input = tdInput.querySelector("[input-row]")
+            
+            tdId.textContent = id
+            tdValue.textContent = value
+
+
+            input.value = id
+            input.name = "tags[" + tableContainer.children.length + "]"
+
+            model.tags.push({id: id})
+
+            console.log(tableContainer.children.length)
+
+            tableContainer.append(tr)
+
+            console.log(tableContainer.children.length)
+        }
+
+
+        window.onload = function () {
+            const cardTemplate = document.querySelector("[data-cards-template]")
+            const cardContainer = document.querySelector("[data-cards-container]")
+            const searchInput = document.querySelector("[data-search]")
+
+            tableTemplate = document.querySelector("[data-row-template]")
+            tableContainer = document.querySelector("[table-body-container]")
+
+            listTemplate = document.querySelector("[list-template]")
+            listContainer = document.querySelector("[list-container]")
+
+            function clearCardContainer() {
+                while (cardContainer.firstChild) {
+                    cardContainer.removeChild(cardContainer.firstChild)
+                }
+            }
+
+            function searchByName(name) {
+                if (name) {
+                    fetch(`${baseUrl}/tag/name/${name}`)
+                        .then(res => res.json())
+                        .then(json => {
+                            console.info(json);
+                            clearCardContainer();
+                            json.content.map(obj => {
+                                //copiar o card
+                                const card = cardTemplate.content.cloneNode(true).children[0]
+                                //acessar o header do card copiado por meio de uma variável
+                                const header = card.querySelector("[data-header]")
+                                //acessar o body do card copiado por meio de uma variável
+                                const body = card.querySelector("[data-body]")
+                                //alterar o texto do header
+                                header.textContent = obj.value
+                                body.textContent = obj.id
+
+                                cardContainer.append(card)
+                            })
+                        })
+                } else {
+                    clearCardContainer();
+                }
+            }
+
+            searchInput.addEventListener("input", e => {
+                const value = e.target.value.toLowerCase()
+                searchByName(value);
+            })
+
+            cardContainer.addEventListener("click", e => {
+                console.log(e.target)
+                console.log(e)
+            });
+
+        }
+
+
+    </script>
+</head>
+
+<body>
+<div layout:fragment="content">
+    <div>
+        <h1>Cadastrar Palavra</h1>
+
+        <div class="alert alert-primary" th:if="${mensagem}" th:text="${mensagem}"></div>
+
+        <form method="POST" th:object="${model}" th:action="@{/word/new/}">
+            <fieldset>
+                <input type="hidden" th:field="*{id}">
+
+                <div class="form-group mb-3">
+                    <label for="name">Nome:</label>
+                    <input class="form-control" type="text" th:field="*{value}" required>
+                    <div class="text-danger" th:if="${#fields.hasErrors('value')}" th:errors="${value}"></div>
+                </div>
+
+                <div class="search-wrapper" style="display:none" >
+                    <label for="search">Buscar Etiquetas para adicionar:</label>
+                    <input type="search" id="search" data-search>
+                </div>
+                <div class="cards" data-cards-container></div>
+
+                <template data-cards-template>
+                    <div class="card" onclick="cardClicked(this)">
+                        <div class="header" data-header></div>
+                        <div class="body" data-body></div>
+                    </div>
+                </template>
+
+                <div th:each="tag : ${tagList}">
+                    <input type="checkbox" th:value="${tag.id}" th:field="*{tags}"/>
+                    <label th:text="${tag.value}"></label>
+                </div>
+
+<!--                <template data-row-template>-->
+<!--                    <tr class="table-row" data-row onclick="removeItem(this)">-->
+<!--                        <td data-row-id></td>-->
+<!--                        <td data-row-value></td>-->
+<!--                        <td data-row-input style="display:none">-->
+<!--                            <input input-row />-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                </template>-->
+
+<!--                <table class="table table-striped">-->
+<!--                    <thead><tr><th>Id</th><th>Nome</th></tr></thead>-->
+<!--                    <tbody table-body-container>-->
+
+
+<!--                    <tr th:each="tag, iter : *{tags}" onclick="removeItem(this)">-->
+<!--                        <td data-row-id th:text="${tag.id}"></td>-->
+<!--                        <td data-row-value th:text="${tag.value}"></td>-->
+<!--                        <td style="display:none">-->
+<!--                            <input th:field="*{tags[__${iter.index}__]}"/>-->
+<!--                        </td>-->
+<!--                    </tr>-->
+<!--                    </tbody>-->
+<!--                </table>-->
+
+                <button type="submit" class="btn btn-primary">Salvar Palavra</button>
+            </fieldset>
+        </form>
+    </div>
+
+</div>
+
+</body>
+
+</html>
