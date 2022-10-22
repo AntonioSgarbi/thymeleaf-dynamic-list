@@ -4,31 +4,33 @@
       layout:decorate="~{layout.html}">
 <meta charset="UTF-8">
 <head>
-    <title>Lista de Etiquetas</title>
+    <title>Tags</title>
 </head>
 
 <div layout:fragment="content">
+    <h1 class="h3 text-center">Tags</h1>
+
     <div>
         <table class="table table-striped">
             <thead>
             <tr>
                 <th>Id</th>
-                <th>Nome</th>
-                <th>Opções</th>
+                <th>Name</th>
+                <th>Options</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${#lists.isEmpty(page.content)}">
-                <td colspan="3">Sem conteúdo</td>
+                <td colspan="3">No content</td>
             </tr>
             </tbody>
             <tbody th:unless="${#lists.isEmpty(page.content)}">
             <tr th:each="tag : ${page.content}">
                 <td th:text="${tag.id}"></td>
                 <td th:text="${tag.value}" width="70%"></td>
-                <td><a class="btn btn-primary btn-sm" th:href="@{/tag/new/} + ${tag.id}">Editar</a>
-                    <a class="btn btn-primary btn-sm" th:href="@{/tag/excluir/} + ${tag.id}"
-                       onclick="return confirm('Você realmente deseja excluir essa linguagem?')">Excluir</a>
+                <td><a class="btn btn-primary btn-sm" th:href="@{/tag/new/} + ${tag.id}">Update</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/tag/delete/} + ${tag.id}"
+                       onclick="return confirm('It cant be undone!')">Delete</a>
                 </td>
             </tr>
             </tbody>

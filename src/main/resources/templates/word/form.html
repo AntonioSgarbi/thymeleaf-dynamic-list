@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-      layout:decorate="~{layout.html}">
+    layout:decorate="~{layout.html}">
 
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro de Palavra</title>
+    <title>Word Register</title>
     <style>
         .search-wrapper {
             display: flex;
@@ -22,8 +22,9 @@
             gap: .25rem;
             margin-top: 1rem;
         }
+
         tr:hover {
-            background-color: red;
+            background-color: rgb(252, 85, 85);
         }
 
         .card {
@@ -31,84 +32,83 @@
             background-color: white;
             padding: .5rem;
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
         }
 
         .card:hover {
             background-color: rgb(94, 226, 133);
         }
-
-        .hide {
-            display: none;
-        }
-
-        .table-row:hover {
-            background-color: rgb(240, 80, 80);
-        }
-
     </style>
-    <script th:inline="javascript">
-        /*<![CDATA[*/
-        var model = /*[[${model}]]*/ 'default';
-        console.log(model);
-        /*]]>*/
-
+    <script>
         const baseUrl = window.location.origin;
         var tableContainer;
         var tableTemplate;
 
-        var listContainer;
-        var listTemplate;
-
-        function removeItem(element) {
-            console.log(element)
-            element.parentNode.removeChild(element)
+        function removeSelf(element) {
+            element.parentNode.removeChild(element);
         }
 
-        function cardClicked(element) {
+        function getTextContentByCardChild(card, child) {
+            console.log('text')
+            console.log(card)
+            console.log(child)
+            return getReferenceElementChild(card, child).textContent;
+        }
+
+        function copyFirstChildFromTemplate(template) {
+            return template.content.cloneNode(true).children[0];
+        }
+
+        function getReferenceElementChild(element, childSelector) {
+            console.log('ref')
             console.log(element)
+            console.log(childSelector)
+            return element.querySelector(`[${childSelector}]`);
+        }
 
-            let header = element.querySelector("[data-header]")
-            let body = element.querySelector("[data-body]")
+        function generateValidNameToInput(positionOnList) {
+            return `tags[${positionOnList}]`;
+        }
 
-            let id = body.textContent
-            let value = header.textContent
+        function onCardClick(cardClicked) {
+            let id = getTextContentByCardChild(cardClicked, 'data-header');
+            let value = getTextContentByCardChild(cardClicked, 'data-body');
 
-            const tr = tableTemplate.content.cloneNode(true).children[0]
+            const tr = copyFirstChildFromTemplate(tableTemplate)
 
-            const tdId = tr.querySelector("[data-row-id]")
-            const tdValue = tr.querySelector("[data-row-value]")
-            const tdInput = tr.querySelector("[data-row-input]")
+            const tdId = getReferenceElementChild(tr, 'data-row-id')
+            const tdValue = getReferenceElementChild(tr, 'data-row-value')
+            const tdInput = getReferenceElementChild(tr, 'data-row-input')
+            const input = getReferenceElementChild(tdInput, 'input-row')
 
-            const input = tdInput.querySelector("[input-row]")
-            
+            //set visible cell text
             tdId.textContent = id
             tdValue.textContent = value
 
-
+            //set
             input.value = id
-            input.name = "tags[" + tableContainer.children.length + "]"
+            input.name = generateValidNameToInput(tableContainer.children.length)
 
-            model.tags.push({id: id})
-
-            console.log(tableContainer.children.length)
-
+            //render
             tableContainer.append(tr)
-
-            console.log(tableContainer.children.length)
         }
 
-
         window.onload = function () {
-            const cardTemplate = document.querySelector("[data-cards-template]")
-            const cardContainer = document.querySelector("[data-cards-container]")
-            const searchInput = document.querySelector("[data-search]")
+
+            //get reference from elements
 
             tableTemplate = document.querySelector("[data-row-template]")
             tableContainer = document.querySelector("[table-body-container]")
 
-            listTemplate = document.querySelector("[list-template]")
-            listContainer = document.querySelector("[list-container]")
+            const cardContainer = document.querySelector("[data-cards-container]")
+            const cardTemplate = document.querySelector("[data-cards-template]")
+
+            const searchInput = document.querySelector("[data-search]")
+
+            const listContainer = document.querySelector("[list-container]")
+            const listTemplate = document.querySelector("[list-template]")
+
+            //define behavior
 
             function clearCardContainer() {
                 while (cardContainer.firstChild) {
@@ -121,25 +121,20 @@
                     fetch(`${baseUrl}/tag/name/${name}`)
                         .then(res => res.json())
                         .then(json => {
-                            console.info(json);
                             clearCardContainer();
                             json.content.map(obj => {
-                                //copiar o card
-                                const card = cardTemplate.content.cloneNode(true).children[0]
-                                //acessar o header do card copiado por meio de uma variável
-                                const header = card.querySelector("[data-header]")
-                                //acessar o body do card copiado por meio de uma variável
-                                const body = card.querySelector("[data-body]")
-                                //alterar o texto do header
-                                header.textContent = obj.value
-                                body.textContent = obj.id
+                                const card = copyFirstChildFromTemplate(cardTemplate)
+                                const header = getReferenceElementChild(card, 'data-header')
+                                const body = getReferenceElementChild(card, 'data-body')
+                                //set text frm fields
+                                header.textContent = obj.id
+                                body.textContent = obj.value
 
+                                //render
                                 cardContainer.append(card)
                             })
                         })
-                } else {
-                    clearCardContainer();
-                }
+                } else clearCardContainer();
             }
 
             searchInput.addEventListener("input", e => {
@@ -147,53 +142,47 @@
                 searchByName(value);
             })
 
-            cardContainer.addEventListener("click", e => {
-                console.log(e.target)
-                console.log(e)
-            });
-
         }
-
 
     </script>
 </head>
 
 <div layout:fragment="content">
     <div>
-        <h1>Cadastrar Palavra</h1>
+        <h1 class="h3 text-center">Word Register</h1>
 
-        <div class="alert alert-primary" th:if="${mensagem}" th:text="${mensagem}"></div>
+        <div class="alert alert-primary" th:if="${message}" th:text="${message}"></div>
 
         <form method="POST" th:object="${model}" th:action="@{/word/new/}">
             <fieldset>
                 <input type="hidden" th:field="*{id}">
 
                 <div class="form-group mb-3">
-                    <label for="name">Nome:</label>
+                    <label for="name">Name:</label>
                     <input class="form-control" type="text" th:field="*{value}" required>
                     <div class="text-danger" th:if="${#fields.hasErrors('value')}" th:errors="${value}"></div>
                 </div>
 
                 <div class="search-wrapper">
-                    <label for="search">Buscar Etiquetas para adicionar:</label>
+                    <label for="search">Add Tags:</label>
                     <input type="search" id="search" data-search>
                 </div>
                 <div class="cards" data-cards-container></div>
 
                 <template data-cards-template>
-                    <div class="card" onclick="cardClicked(this)">
-                        <div class="header" data-header></div>
-                        <div class="body" data-body></div>
+                    <div class="card" onclick="onCardClick(this)">
+                        <div class="header text-center" data-header></div>
+                        <div class="body text-center" data-body></div>
                     </div>
                 </template>
 
-<!--                <div th:each="tag : ${tagList}">-->
-<!--                    <input type="checkbox" th:value="${tag.id}" th:field="*{tags}"/>-->
-<!--                    <label th:text="${tag.value}"></label>-->
-<!--                </div>-->
+                <!--                <div th:each="tag : ${tagList}">-->
+                <!--                    <input type="checkbox" th:value="${tag.id}" th:field="*{tags}"/>-->
+                <!--                    <label th:text="${tag.value}"></label>-->
+                <!--                </div>-->
 
                 <template data-row-template>
-                    <tr class="table-row" data-row onclick="removeItem(this)">
+                    <tr class="table-row" data-row onclick="removeSelf(this)">
                         <td data-row-id></td>
                         <td data-row-value></td>
                         <td data-row-input style="display:none">
@@ -203,24 +192,28 @@
                 </template>
 
                 <table class="table table-striped">
-                    <thead><tr><th>Id</th><th>Nome</th></tr></thead>
+                    <thead>
+                        <tr>
+                            <th>Id</th>
+                            <th>Name</th>
+                        </tr>
+                    </thead>
                     <tbody table-body-container>
-
-
-                    <tr th:each="tag, iter : *{tags}" onclick="removeItem(this)">
-                        <td data-row-id th:text="${tag.id}"></td>
-                        <td data-row-value th:text="${tag.value}"></td>
-                        <td style="display:none">
-                            <input th:field="*{tags[__${iter.index}__]}"/>
-                        </td>
-                    </tr>
+                        <tr th:each="tag, iter : *{tags}" onclick="removeSelf(this)">
+                            <td data-row-id th:text="${tag.id}"></td>
+                            <td data-row-value th:text="${tag.value}"></td>
+                            <td style="display:none">
+                                <input th:field="*{tags[__${iter.index}__]}" />
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
 
-                <button type="submit" class="btn btn-primary">Salvar Palavra</button>
+                <button type="submit" class="btn btn-primary">Save</button>
             </fieldset>
         </form>
     </div>
 
 </div>
+
 </html>

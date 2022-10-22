@@ -54,10 +54,10 @@ public class WordController {
 
         if(word.getId() != null) {
             word = this.wordService.update(word);
-            mv.addObject("mensagem", "Palavra atualizada com sucesso");
+            mv.addObject("message", "successfully updated");
         } else {
             word = this.wordService.insert(word);
-            mv.addObject("mensagem", "Palavra cadastrada com sucesso");
+            mv.addObject("message", "successfully registered");
         }
         mv.addObject("model", new Word());
         mv.addObject("tagList", this.tagService.findAllList());
@@ -65,26 +65,12 @@ public class WordController {
         return mv;
     }
 
-
-    @GetMapping("/excluir/{id}")
+    @GetMapping("/delete/{id}")
     public ModelAndView delete(@PathVariable Long id) {
         this.wordService.delete(id);
         ModelAndView mv = new ModelAndView("word/list.html");
         mv.addObject("page", wordService.findAll(Pageable.unpaged()));
-
-        return mv;
-    }
-
-    @PostMapping("/news")
-    public ModelAndView insert1(@RequestBody Word dto) {
-        ModelAndView mv = new ModelAndView("word/form.html");
-
-        if(dto.getId() != null) {
-            dto = this.wordService.update(dto);
-        } else {
-            dto = this.wordService.insert(dto);
-        }
-        mv.addObject("model", dto);
+        mv.addObject("message", "record deleted");
 
         return mv;
     }

@@ -4,32 +4,33 @@
       layout:decorate="~{layout.html}">
 <meta charset="UTF-8">
 <head>
-    <title>Palavras</title>
+    <title>Words</title>
     <script> </script>
 </head>
 
 <div layout:fragment="content">
+    <h1 class="h3 text-center">Words</h1>
     <div>
         <table class="table table-striped">
             <thead>
             <tr>
                 <th>Id</th>
-                <th>Nome</th>
-                <th>Opções</th>
+                <th>Value</th>
+                <th>Options</th>
             </tr>
             </thead>
             <tbody>
             <tr th:if="${#lists.isEmpty(page.content)}">
-                <td colspan="3">Sem conteúdo</td>
+                <td colspan="3">No content</td>
             </tr>
             </tbody>
             <tbody th:unless="${#lists.isEmpty(page.content)}">
             <tr th:each="word : ${page.content}">
                 <td th:text="${word.id}"></td>
                 <td th:text="${word.value}" width="70%"></td>
-                <td><a class="btn btn-primary btn-sm" th:href="@{/word/new?id=} + ${word.id}">Editar</a>
-                    <a class="btn btn-primary btn-sm" th:href="@{/word/excluir/} + ${word.id}"
-                       onclick="return confirm('Você realmente deseja excluir essa linguagem?')">Excluir</a>
+                <td><a class="btn btn-primary btn-sm" th:href="@{/word/new?id=} + ${word.id}">Update</a>
+                    <a class="btn btn-danger btn-sm" th:href="@{/word/delete/} + ${word.id}"
+                       onclick="return confirm('It cant be undone!')">Delete</a>
                 </td>
             </tr>
             </tbody>

@@ -63,8 +63,8 @@ public class TagController {
 
         this.tagService.delete(id);
 
-        mv.addObject("list", this.tagService.findAll(Pageable.unpaged()));
-        mv.addObject("message", "registro excluído");
+        mv.addObject("page", this.tagService.findAll(Pageable.unpaged()));
+        mv.addObject("message", "record deleted");
 
         return mv;
     }

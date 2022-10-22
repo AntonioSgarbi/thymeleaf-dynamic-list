@@ -4,20 +4,22 @@
       layout:decorate="~{layout.html}">
 <head>
     <meta charset="UTF-8">
-    <title>Cadastro de Etiqueta</title>
+    <title>Tag Register</title>
 </head>
 
 <div layout:fragment="content">
     <div>
-        <h1>Cadastrar Etiqueta</h1>
+        <h1 class="h3 text-center">Tag Register</h1>
+        <div class="alert alert-primary" th:if="${message}" th:text="${message}"></div>
+
         <form method="POST" th:object="${model}" th:action="@{/tag/new}">
             <input id="name" type="hidden" th:field="*{id}">
             <div class="form-group mb-3">
-                <label for="name">Nome da etiqueta:</label>
+                <label for="name">Name:</label>
                 <input class="form-control" type="text" th:field="*{value}" required></input>
                 <div class="text-danger" th:if="${#fields.hasErrors('value')}" th:errors="*{value}"></div>
             </div>
-            <button type="submit" class="btn btn-primary">Salvar Etiqueta</button>
+            <button type="submit" class="btn btn-primary">Save</button>
         </form>
     </div>
 </div>
