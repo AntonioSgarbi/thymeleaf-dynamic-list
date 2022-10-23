@@ -26,7 +26,7 @@ public class TagService {
     }
 
     public Page<Tag> findByName(String name, Pageable pageable) {
-        return this.tagRepository.findAllByValueContaining(name, pageable);
+        return this.tagRepository.findAllByValueContainingIgnoreCase(name, pageable);
     }
 
     public Tag insert(Tag model) {
